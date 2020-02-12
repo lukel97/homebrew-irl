@@ -17,6 +17,6 @@ jobs:
       with:
         args: |
           functions deploy move-to-firestore
-            --source move_to_firestore \
+            --source move-to-firestore \
             --runtime python37 \
             --trigger-topic homebrew-events
