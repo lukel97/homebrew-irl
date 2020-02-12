@@ -18,5 +18,7 @@ jobs:
         args: |
           functions deploy move-to-firestore \
             --source move-to-firestore \
+            --entry-point move_to_firestore \
             --runtime python37 \
-            --trigger-topic homebrew-events
+            --trigger-topic homebrew-events \
+            --region europe-west1
