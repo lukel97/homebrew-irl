@@ -16,7 +16,7 @@ jobs:
         APPLICATION_CREDENTIALS: ${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}
       with:
         args: |
-          gcloud functions deploy move-to-firestore \
+          functions deploy move-to-firestore
             --source move_to_firestore \
             --runtime python37 \
             --trigger-topic homebrew-events
