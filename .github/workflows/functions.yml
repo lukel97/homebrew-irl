@@ -13,7 +13,7 @@ jobs:
       uses: actions-hub/gcloud@278.0.0
       env:
         PROJECT_ID: ${{secrets.GOOGLE_PROJECT_ID}}
-        APPLICATION_CREDENTIALS: ${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}:  
+        APPLICATION_CREDENTIALS: ${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}
       with:
         args: |
           gcloud functions deploy move-to-firestore \
