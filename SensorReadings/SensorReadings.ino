@@ -3,6 +3,7 @@
 
 #include "Arduino.h"
 #include "heltec.h"
+#include "WiFi.h"
 
 
 const int tempPin = 0;
@@ -39,12 +40,27 @@ Heltec.begin(true /*DisplayEnable Enable*/, false /*LoRa Disable*/, true /*Seria
 Heltec.display->flipScreenVertically();
 Heltec.display->setFont(ArialMT_Plain_10);
 
+	// Try connecting to wifi
+	WiFi.begin("Luke’s iPhone", "password");
+}
 
+int wifiStatusTick = 0;
+void displayWiFiStatus() {
+	Heltec.display->setTextAlignment(TEXT_ALIGN_LEFT);
+	if (WiFi.status() != WL_CONNECTED) {
+		String s = String("Connecting to WiFi ") + String(wifiStatusTick++ % 2 == 0 ? "." : "");
+		Heltec.display->drawString(0, 0, s);
+	} else {
+		String s = String("Connected @ ") + WiFi.localIP().toString();
+		Heltec.display->drawString(0, 0, s);
+	}
 }
 
  
 void loop(){
   Heltec.display->clear();
+
+  displayWiFiStatus();
 
   //temp sensor
   tempC = celsius(analogRead(tempPin));
