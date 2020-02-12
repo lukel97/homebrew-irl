@@ -1,6 +1,9 @@
 name: Deploy Google Cloud Function
 
-on: [push]
+on:
+  push:
+    paths:
+    - 'move-to-firestore/**'
 
 jobs:
   build:
