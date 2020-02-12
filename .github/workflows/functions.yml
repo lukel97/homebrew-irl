@@ -1,0 +1,22 @@
+name: Deploy Google Cloud Function
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Google Cloud Platform (GCP) CLI - gcloud
+      uses: actions-hub/gcloud@278.0.0
+      env:
+        PROJECT_ID: ${{secrets.GOOGLE_PROJECT_ID}}
+        APPLICATION_CREDENTIALS: ${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}:  
+      with:
+        args: |
+          gcloud functions deploy move-to-firestore \
+            --source move_to_firestore \
+            --runtime python37 \
+            --trigger-topic homebrew-events
