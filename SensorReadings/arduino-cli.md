@@ -7,3 +7,9 @@ arduino-cli compile --fqbn Heltec-esp32:esp32:wifi_lora_32_V2
 arduino-cli board list
 arduino-cli upload -p <port> --fqbn Heltec-esp32:esp32:wifi_lora_32_V2
 ```
+
+# Viewing the UART
+
+```
+screen /dev/cu.SLAB_USBtoUART 115200
+```

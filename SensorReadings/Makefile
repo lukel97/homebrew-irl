@@ -1,9 +1,15 @@
-.PHONY: compile
 .PHONY: upload
+.PHONY: debug
 
-all: compile upload
+all: SensorReadings.Heltec-esp32.esp32.wifi_lora_32_V2.bin
 
-compile: *.ino
-	arduino-cli compile --fqbn Heltec-esp32:esp32:wifi_lora_32_V2
-upload:
+SensorReadings.Heltec-esp32.esp32.wifi_lora_32_V2.bin: SensorReadings.ino
+	arduino-cli compile --fqbn Heltec-esp32:esp32:wifi_lora_32_V2 --warnings default
+
+# can be useful for debugging
+# --build-properties build.code_debug=5
+
+upload: SensorReadings.Heltec-esp32.esp32.wifi_lora_32_V2.bin
 	arduino-cli upload -p /dev/cu.SLAB_USBtoUART --fqbn Heltec-esp32:esp32:wifi_lora_32_V2
+debug: upload
+	screen /dev/cu.SLAB_USBtoUART 115200
