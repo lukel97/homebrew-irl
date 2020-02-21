@@ -11,7 +11,22 @@
 #include <CloudIoTCoreMqtt.h>
 #include "RootCAs.h"
 #include "Secrets.h"
+#include <OneWire.h>
+#include <DallasTemperature.h>
 
+//waterproof temp
+#define Temp1_Pin 2
+#define Temp2_Pin 4
+OneWire oneWire(Temp1_Pin);
+OneWire twoWire(Temp2_Pin);
+
+DallasTemperature sensor1(&oneWire);
+DallasTemperature sensor2(&twoWire);
+float Celcius=0;
+float Fahrenheit=0;
+
+
+ 
 const int tempPin = 0;
 const int alcAPin = 15;
 const int alcDPin = 22;
@@ -42,7 +57,7 @@ const char *deviceId = "esp32";
 
 
 void setup(){
-	pinMode(tempPin, INPUT);
+	//pinMode(tempPin, INPUT);
 	pinMode(alcAPin, INPUT);
 	pinMode(alcDPin, INPUT);
 
@@ -138,6 +153,29 @@ String getJwt() {
   unsigned long iat = time(nullptr);
   Serial.println(String("Refreshing JWT @ ") + iat);
   return device->createJWT(iat, 30);
+}
+
+//reading 2 liquid temp sensors
+void watertemp() {
+  sensor1.requestTemperatures(); 
+  Celcius=sensor1.getTempCByIndex(0);
+  Fahrenheit=sensor1.toFahrenheit(Celcius);
+  Serial.print(" C  ");
+  Serial.print(Celcius);
+  Serial.print(" F  ");
+  Serial.println(Fahrenheit);
+  delay(1000);
+
+  sensor2.requestTemperatures(); 
+  Celcius=sensor2.getTempCByIndex(0);
+  Fahrenheit=sensor2.toFahrenheit(Celcius);
+  Serial.print("Pin4 Sensor 2");
+  Serial.print(" C  ");
+  Serial.print(Celcius);
+  Serial.print(" F  ");
+  Serial.println(Fahrenheit);
+  delay(1000);
+  
 }
 
 void loop(){
