@@ -17,5 +17,6 @@ def move_to_firestore(event, context):
     doc_ref.set({
         u'beerTemp': msg['beerTemp'],
         u'ambientTemp': msg['ambientTemp'],
-        u'timestamp': context.timestamp
+        # do we need to convert this to a timestamp?
+        u'timestamp': event['publishTime']
         })
