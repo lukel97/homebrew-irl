@@ -23,5 +23,5 @@ jobs:
             --source move-to-firestore \
             --entry-point move_to_firestore \
             --runtime python37 \
-            --trigger-topic homebrew-events \
+            --trigger-topic telemetry \
             --region europe-west1
