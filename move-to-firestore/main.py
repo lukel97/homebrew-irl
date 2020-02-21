@@ -1,4 +1,5 @@
 import base64
+import dateutil.parser
 import json
 from google.cloud import firestore
 
@@ -17,6 +18,5 @@ def move_to_firestore(event, context):
     doc_ref.set({
         u'beerTemp': msg['beerTemp'],
         u'ambientTemp': msg['ambientTemp'],
-        # do we need to convert this to a timestamp?
-        u'timestamp': event['publishTime']
+        u'timestamp': dateutil.parser.parse(context.timestamp)
         })
