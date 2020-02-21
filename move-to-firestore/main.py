@@ -13,8 +13,6 @@ def move_to_firestore(event, context):
 
     doc_ref = db.collection(u'device-config').document()
     doc_ref.set({
-        u'message': pubsub_message
+        u'message': pubsub_message,
+        u'timestamp': context.timestamp
         })
-
-    print('Persisting a message')
-    print(pubsub_message)
