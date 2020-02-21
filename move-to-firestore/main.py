@@ -1,4 +1,5 @@
 import base64
+import json
 from google.cloud import firestore
 
 db = firestore.Client()
@@ -9,10 +10,12 @@ def move_to_firestore(event, context):
          event (dict): Event payload.
          context (google.cloud.functions.Context): Metadata for the event.
     """
-    pubsub_message = base64.b64decode(event['data']).decode('utf-8')
+    msg_data = base64.b64decode(event['data']).decode('utf-8')
+    msg = json.loads(msg_data)
 
     doc_ref = db.collection(u'device-config').document()
     doc_ref.set({
-        u'message': pubsub_message,
+        u'beerTemp': msg['beerTemp'],
+        u'ambientTemp': msg['ambientTemp'],
         u'timestamp': context.timestamp
         })
