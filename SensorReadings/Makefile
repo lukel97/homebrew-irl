@@ -3,8 +3,10 @@
 
 all: SensorReadings.Heltec-esp32.esp32.wifi_lora_32_V2.bin
 
-SensorReadings.Heltec-esp32.esp32.wifi_lora_32_V2.bin: SensorReadings.ino
-	arduino-cli compile --fqbn Heltec-esp32:esp32:wifi_lora_32_V2 --warnings default
+SensorReadings.Heltec-esp32.esp32.wifi_lora_32_V2.bin: SensorReadings.ino Secrets.h
+	arduino-cli compile --fqbn Heltec-esp32:esp32:wifi_lora_32_V2 \
+		--warnings default \
+	   	--libraries google-cloud-iot-arduino 
 
 # can be useful for debugging
 # --build-properties build.code_debug=5

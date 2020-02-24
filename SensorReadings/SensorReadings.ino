@@ -14,6 +14,9 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
+// Use this on TCDwifi
+#define TIMESERVER_HACK
+
 //waterproof temp
 #define Temp1_Pin 2
 #define Temp2_Pin 4
@@ -55,7 +58,6 @@ CloudIoTCoreMqtt *mqtt;
 
 const char *deviceId = "esp32";
 
-
 void setup(){
 	//pinMode(tempPin, INPUT);
 	pinMode(alcAPin, INPUT);
@@ -69,21 +71,22 @@ void setup(){
 	Heltec.display->flipScreenVertically();
 	Heltec.display->setFont(ArialMT_Plain_10);
 
-    /* Serial.setDebugOutput(true); */
-    /* esp_log_level_set("*", ESP_LOG_VERBOSE); */
+    Serial.setDebugOutput(true);
+    esp_log_level_set("*", ESP_LOG_VERBOSE);
 
 	WiFi.mode(WIFI_STA);
     
     // To connect to TCDwifi
-	/* esp_wifi_sta_wpa2_ent_set_identity((uint8_t *)EAP_IDENTITY, strlen(EAP_IDENTITY)); */
-	/* esp_wifi_sta_wpa2_ent_set_username((uint8_t *)EAP_IDENTITY, strlen(EAP_IDENTITY)); */
-	/* esp_wifi_sta_wpa2_ent_set_password((uint8_t *)EAP_PASSWORD, strlen(EAP_PASSWORD)); */
-	/* esp_wpa2_config_t config = WPA2_CONFIG_INIT_DEFAULT(); */
-	/* esp_wifi_sta_wpa2_ent_enable(&config); */
-	/* WiFi.begin("TCDwifi"); */
+	esp_wifi_sta_wpa2_ent_set_identity((uint8_t *)EAP_IDENTITY, strlen(EAP_IDENTITY));
+	esp_wifi_sta_wpa2_ent_set_username((uint8_t *)EAP_IDENTITY, strlen(EAP_IDENTITY));
+	esp_wifi_sta_wpa2_ent_set_password((uint8_t *)EAP_PASSWORD, strlen(EAP_PASSWORD));
+	esp_wpa2_config_t config = WPA2_CONFIG_INIT_DEFAULT();
+	esp_wifi_sta_wpa2_ent_enable(&config);
+
+	WiFi.begin("TCDwifi");
 
     // To connect to hotspot
-    WiFi.begin("Luke’s iPhone", "password");
+    /* WiFi.begin("Luke’s iPhone", "password"); */
 }
 
 bool connected = false, timeSetup = false, cloudSetup = false;
@@ -101,7 +104,7 @@ void displayWiFiStatus() {
     connected = WiFi.status() == WL_CONNECTED;
     switch (WiFi.status()) {
     case WL_CONNECTED:
-		s = String("Connected @ ") + WiFi.localIP().toString();
+		s = String("Connected @ ") + WiFi.localIPv6().toString();
 		Heltec.display->drawString(0, 0, s);
         break;
     case WL_NO_SSID_AVAIL:
@@ -149,10 +152,11 @@ void makeHttpRequest(String host, String url) {
 
 // Needed for Google Cloud IoT Core
 // FIXME: the connection drops every other time the token is refreshed
+// mqtt: SERVER: The connection was closed because there is another active connection with the same device ID.
 String getJwt() {
   unsigned long iat = time(nullptr);
   Serial.println(String("Refreshing JWT @ ") + iat);
-  return device->createJWT(iat, 30);
+  return device->createJWT(iat, 3000);
 }
 
 //reading 2 liquid temp sensors
@@ -178,7 +182,16 @@ void watertemp() {
   
 }
 
+unsigned long lastMillis;
+
 void loop(){
+  unsigned long delta = millis() - lastMillis;
+  bool every10Secs = false;
+  if (delta > 10000) {
+    lastMillis = millis();
+    every10Secs = true;
+  }
+
   Heltec.display->clear();
 
   displayWiFiStatus();
@@ -186,22 +199,34 @@ void loop(){
   // Sync the time
   if (!timeSetup && connected) {
     // Need to manually set the dns server for some reason. DHCP fails to do so
-    /* const IPAddress dnsServer = IPAddress(134,226,251,100); */ // for tcd wifi
-    const IPAddress dnsServer = IPAddress(1,1,1,1);
+    const IPAddress dnsServer = IPAddress(134,226,251,100); // for tcd wifi
+    /* const IPAddress dnsServer = IPAddress(1,1,1,1); */
+
     WiFi.config(WiFi.localIP(), WiFi.gatewayIP(), WiFi.subnetMask(), dnsServer); 
 
+#ifdef TIMESERVER_HACK
+    // Because TCDwifi blocks the NTP port...
+    // just set a relatively recent date manually.
+	int epoch_time = 1582560630;
+	timeval epoch = {epoch_time, 0};
+	const timeval *tv = &epoch;
+	timezone utc = {0,0};
+	const timezone *tz = &utc;
+	settimeofday(tv, tz);
+#else
     configTime(0, 0, "pool.ntp.org", "time.nist.gov");
     Serial.println("Waiting on time sync...");
     while (time(nullptr) < 1510644967) {
       delay(10);
     }
     Serial.println("Time synced");
+#endif
+
     timeSetup = true;
   }
 
   if (timeSetup && !cloudSetup && connected) {
     wifiClient = new WiFiClientSecure();
-
     /* wifiClient->setCACert(googleRootCert); */
  
     // Setup Google Cloud IoT
@@ -210,9 +235,9 @@ void loop(){
 
     mqttClient = new MQTTClient(512);
     mqttClient->setOptions(180, true, 1000); // keepAlive, cleanSession, timeout
-    mqtt = new CloudIoTCoreMqtt(mqttClient, wifiClient, device);
+    mqtt = new CloudIoTCoreMqtt(mqttClient, wifiClient, device, true); // Use HTTP port!
     mqtt->setUseLts(true);
-    mqtt->setLogConnect(false); // Otherwise we get those esp32-connected messages
+    mqtt->setLogConnect(false); // Otherwise we get those esp32-connected messages in pub/sub
     mqtt->startMQTT();
 
     cloudSetup = true;
@@ -224,11 +249,14 @@ void loop(){
     
     if (!mqttClient->connected()) {
       Serial.println("MQTT client not connected, reconnecting");
+      mqttClient->disconnect();
       mqtt->mqttConnect();
     }
 
-    if (millis() % 5000 == 0) {
-      String payload = String("{ambient:") + String(tempC) + String("}");
+    if (every10Secs) {
+      String payload = String("{ \"ambientTemp\":") + String(tempC) + ",\n";
+      payload += "\"beerTemp\": " + String(tempC) + "\n";
+      payload += "}";
       mqtt->publishTelemetry(payload);
       Serial.println("Sending:" + payload);
     }

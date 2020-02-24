@@ -1,0 +1,3 @@
+[submodule "SensorReadings/google-cloud-iot-arduino"]
+	path = SensorReadings/google-cloud-iot-arduino
+	url = https://github.com/bubba/google-cloud-iot-arduino.git
