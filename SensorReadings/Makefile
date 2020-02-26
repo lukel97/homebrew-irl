@@ -1,5 +1,6 @@
 .PHONY: upload
 .PHONY: debug
+.PHONY: serial
 
 all: SensorReadings.Heltec-esp32.esp32.wifi_lora_32_V2.bin
 
@@ -13,5 +14,7 @@ SensorReadings.Heltec-esp32.esp32.wifi_lora_32_V2.bin: SensorReadings.ino Secret
 
 upload: SensorReadings.Heltec-esp32.esp32.wifi_lora_32_V2.bin
 	arduino-cli upload -p /dev/cu.SLAB_USBtoUART --fqbn Heltec-esp32:esp32:wifi_lora_32_V2
-debug: upload
+
+serial:
 	screen /dev/cu.SLAB_USBtoUART 115200
+debug: upload serial
