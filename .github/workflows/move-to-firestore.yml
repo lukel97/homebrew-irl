@@ -1,0 +1,27 @@
+name: Deploy move-to-firestore
+
+on:
+  push:
+    paths:
+    - 'move-to-firestore/**'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Deploy
+      uses: actions-hub/gcloud@278.0.0
+      env:
+        PROJECT_ID: ${{secrets.GOOGLE_PROJECT_ID}}
+        APPLICATION_CREDENTIALS: ${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}
+      with:
+        args: |
+          functions deploy move-to-firestore \
+            --source move-to-firestore \
+            --entry-point move_to_firestore \
+            --runtime python37 \
+            --trigger-topic telemetry \
+            --region europe-west1

@@ -1,9 +1,9 @@
-name: Deploy Google Cloud Function
+name: Deploy unix-epoch-gmt
 
 on:
   push:
     paths:
-    - 'move-to-firestore/**'
+    - 'unix-epoch/**'
 
 jobs:
   build:
@@ -12,16 +12,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Google Cloud Platform (GCP) CLI - gcloud
+    - name: Deploy
       uses: actions-hub/gcloud@278.0.0
       env:
         PROJECT_ID: ${{secrets.GOOGLE_PROJECT_ID}}
         APPLICATION_CREDENTIALS: ${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}
       with:
         args: |
-          functions deploy move-to-firestore \
-            --source move-to-firestore \
-            --entry-point move_to_firestore \
-            --runtime python37 \
-            --trigger-topic telemetry \
+          functions deploy unix-epoch-gmt \
+            --source unix-epoch \
+            --entry-point UnixEpoch \
+            --runtime go113 \
+            --trigger-http \
             --region europe-west1
