@@ -12,11 +12,20 @@ spec:
       labels:
         app: websocket
     spec:
+      volumes:
+      - name: google-cloud-key
+        secret:
+          secretName: pubsub-key 
       containers:
       - name: websocket-server
         image: gcr.io/hombrew-iot/websocket-server:latest
         ports:
         - containerPort: 443
+        volumeMounts:
+        - name: google-cloud-key
+          mountPath: /var/secrets/google
         env:
           - name: PORT
             value: "443"
+          - name: GOOGLE_APPLICATION_CREDENTIALS
+            value: /var/secrets/google/key.json
