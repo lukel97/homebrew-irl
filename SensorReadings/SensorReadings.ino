@@ -19,7 +19,7 @@
 
 // waterproof temp
 #define Temp1_Pin 2
-#define Temp2_Pin 4
+#define Temp2_Pin 12
 OneWire oneWire(Temp1_Pin);
 OneWire twoWire(Temp2_Pin);
 
@@ -59,6 +59,8 @@ void setup() {
     // pinMode(tempPin, INPUT);
     pinMode(alcAPin, INPUT);
     pinMode(alcDPin, INPUT);
+	pinMode(Temp1_Pin, INPUT);
+	pinMode(Temp2_Pin, INPUT);
 
     Serial.begin(9600);
 
@@ -177,26 +179,26 @@ String getJwt() {
     return device->createJWT(iat, 3000);
 }
 
+float ambientTemp, beerTemp;
+
 // reading 2 liquid temp sensors
 void watertemp() {
     sensor1.requestTemperatures();
-    Celcius = sensor1.getTempCByIndex(0);
-    Fahrenheit = sensor1.toFahrenheit(Celcius);
-    Serial.print(" C  ");
-    Serial.print(Celcius);
+    ambientTemp = sensor1.getTempCByIndex(0);
+    Fahrenheit = sensor1.toFahrenheit(ambientTemp);
+    Serial.print("Pin2 Sensor 1 C  ");
+    Serial.print(ambientTemp);
     Serial.print(" F  ");
     Serial.println(Fahrenheit);
-    delay(1000);
 
     sensor2.requestTemperatures();
-    Celcius = sensor2.getTempCByIndex(0);
-    Fahrenheit = sensor2.toFahrenheit(Celcius);
+    beerTemp = sensor2.getTempCByIndex(0);
+    Fahrenheit = sensor2.toFahrenheit(beerTemp);
     Serial.print("Pin4 Sensor 2");
     Serial.print(" C  ");
-    Serial.print(Celcius);
+    Serial.print(beerTemp);
     Serial.print(" F  ");
     Serial.println(Fahrenheit);
-    delay(1000);
 }
 
 bool syncTime() {
@@ -233,6 +235,8 @@ void loop() {
     }
 
     Heltec.display->clear();
+
+	watertemp();
 
     displayWiFiStatus();
 
@@ -283,8 +287,8 @@ void loop() {
 
         if (every10Secs) {
             String payload =
-                String("{ \"ambientTemp\":") + String(tempC) + ",\n";
-            payload += "\"beerTemp\": " + String(tempC) + "\n";
+                String("{ \"ambientTemp\":") + String(ambientTemp) + ",\n";
+            payload += "\"beerTemp\": " + String(beerTemp) + "\n";
             payload += "}";
             mqtt->publishTelemetry(payload);
             Serial.println("Sending:" + payload);
