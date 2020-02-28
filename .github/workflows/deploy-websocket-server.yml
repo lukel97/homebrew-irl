@@ -14,7 +14,7 @@ on:
   push:
     paths:
       - 'websocket-server/**'
-      - .github/workflows/deploy-websocker-server.yml
+      - '.github/workflows/deploy-websocket-server.yml'
 
 # Environment variables available to all jobs and steps in this workflow
 env:
