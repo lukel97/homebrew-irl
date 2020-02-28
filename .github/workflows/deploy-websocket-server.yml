@@ -52,13 +52,12 @@ jobs:
     # Build the Docker image
     - name: Build
       run: |        
-        docker build -t "$REGISTRY_HOSTNAME"/"$PROJECT_ID"/"$IMAGE":"$GITHUB_SHA" websocket-server
+        docker build -t "$REGISTRY_HOSTNAME"/"$PROJECT_ID"/"$IMAGE":"$GITHUB_SHA" -t "$REGISTRY_HOSTNAME"/"$PROJECT_ID"/"$IMAGE" websocket-server
 
     # Push the Docker image to Google Container Registry
     - name: Publish
       run: |
-        docker push $REGISTRY_HOSTNAME/$PROJECT_ID/$IMAGE \
-            -t $REGISTRY_HOSTNAME/$PROJECT_ID/$IMAGE:$GITHUB_SHA
+        docker push $REGISTRY_HOSTNAME/$PROJECT_ID/$IMAGE:$GITHUB_SHA
         
     # # Set up kustomize
     # - name: Set up Kustomize
