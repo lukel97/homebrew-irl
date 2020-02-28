@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: websocket-server
+spec:
+  replicas: 1
+  sector:
+    matchLabels:
+      app: websocket
+  template:
+    metadata:
+      labels:
+        app: websocket
+    spec:
+      containers:
+      - name: websocket-server
+        image: gcr.io/hombrew-iot/websocket-server:latest
+        ports:
+        - containerPort: 443
+        env:
+          - name: PORT
+          - value: "443"
