@@ -19,4 +19,4 @@ spec:
         - containerPort: 443
         env:
           - name: PORT
-          - value: "443"
+            value: "443"
