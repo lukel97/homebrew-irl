@@ -1,4 +1,4 @@
-FROM ruby:2.7
+FROM ruby:2.6
 
 # install dependencies
 WORKDIR /usr/src/app
