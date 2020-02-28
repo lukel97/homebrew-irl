@@ -52,9 +52,7 @@ jobs:
     # Build the Docker image
     - name: Build
       run: |        
-        docker build -t "$REGISTRY_HOSTNAME"/"$PROJECT_ID"/"$IMAGE":"$GITHUB_SHA" \
-          --build-arg GITHUB_SHA="$GITHUB_SHA" \
-          --build-arg GITHUB_REF="$GITHUB_REF" websocket-server
+        docker build -t "$REGISTRY_HOSTNAME"/"$PROJECT_ID"/"$IMAGE":"$GITHUB_SHA" websocket-server
 
     # Push the Docker image to Google Container Registry
     - name: Publish
