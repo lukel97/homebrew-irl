@@ -14,6 +14,7 @@ on:
   push:
     paths:
       - 'websocket-server/**'
+      - .github/workflows/deploy-websocker-server.yml
 
 # Environment variables available to all jobs and steps in this workflow
 env:
@@ -53,7 +54,7 @@ jobs:
       run: |        
         docker build -t "$REGISTRY_HOSTNAME"/"$PROJECT_ID"/"$IMAGE":"$GITHUB_SHA" \
           --build-arg GITHUB_SHA="$GITHUB_SHA" \
-          --build-arg GITHUB_REF="$GITHUB_REF" .
+          --build-arg GITHUB_REF="$GITHUB_REF" websocket-server
 
     # Push the Docker image to Google Container Registry
     - name: Publish
