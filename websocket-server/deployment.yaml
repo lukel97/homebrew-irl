@@ -4,7 +4,7 @@ metadata:
   name: websocket-server
 spec:
   replicas: 1
-  sector:
+  selector:
     matchLabels:
       app: websocket
   template:
