@@ -1,3 +1,0 @@
-runtime: ruby
-env: standard
-entrypoint: bundle exec ruby app.rb
