@@ -16,11 +16,12 @@ end
 
 subscriber.start
 
-port = ENV['PORT'] || 8080
+port = ENV['PORT'] || 443
 
 EventMachine.run do
   WebSocket::EventMachine::Server.start(:host => '0.0.0.0', :port => port) do |ws|
     ws.onopen do
+      puts "Socket opened"
       @socks << ws
     end
     ws.onclose do
