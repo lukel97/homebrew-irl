@@ -18,6 +18,8 @@ subscriber.start
 
 port = ENV['PORT'] || 443
 
+puts "Now listening on port #{port}"
+
 EventMachine.run do
   WebSocket::EventMachine::Server.start(:host => '0.0.0.0', :port => port) do |ws|
     ws.onopen do
@@ -25,6 +27,7 @@ EventMachine.run do
       @socks << ws
     end
     ws.onclose do
+      puts "Socket closed"
       @socks -= [ws]
     end
   end

@@ -12,10 +12,17 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Deploy
+    - name: Build image
       uses: actions-hub/gcloud@278.0.0
       env:
         PROJECT_ID: ${{secrets.GOOGLE_PROJECT_ID}}
         APPLICATION_CREDENTIALS: ${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}
       with:
         args: builds submit --tag gcr.io/$PROJECT_ID/websocket-server websocket-server
+    - name: Update container
+      uses: actions-hub/gcloud@278.0.0
+      env:
+        PROJECT_ID: ${{secrets.GOOGLE_PROJECT_ID}}
+        APPLICATION_CREDENTIALS: ${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}
+      with:
+        args: compute instances update-container websocket-server --container-image gcr.io/hombrew-iot/websocket-server:latest
