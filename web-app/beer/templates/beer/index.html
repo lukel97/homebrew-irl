@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+	<body>
+
+	{% if beer_temperature_string %}
+		<p>
+			Last beer temperature: {{ beer_temperature_string }}C at {{ timestamp }}
+		</p>
+	{% else %}
+		<p>
+			!! NO TEMPERATURE DATA !!
+		</p>
+	{% endif %}
+
+	{% if ambient_temperature_string %}
+		<p>
+			Last ambient temperature: {{ ambient_temperature_string }}C at {{ timestamp }}
+		</p>
+	{% else %}
+		<p>
+			!! NO TEMPERATURE DATA !!
+		</p>
+	{% endif %}
+	
+	</body>
+
+	<button id="NUKE_EVIDENCE" onclick="nuclear()">
+		NUKE
+	</button>
+
+
+
+	<script button_stuff>
+		function nuclear() {
+			alert("DESTROYING EVIDENCE...");
+			// make the function do stuff to control the 
+		}
+	</script>
+
+	<script>
+		var socket = new WebSocket("wss://hombrew-iot.appspot.com");
+		
+		socket.onmessage = function(e) {
+	        var data = JSON.parse(e.data);
+	        var message = data['message'];
+	        console.log(message);
+        	// document.querySelector('#chat-log').value += (message + '\n');
+	    };
+
+	    socket.onclose = function(e) {
+	        console.error('Chat socket closed unexpectedly');
+	    };
+
+	</script>
+</html>

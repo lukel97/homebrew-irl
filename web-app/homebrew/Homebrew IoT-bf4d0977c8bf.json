@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "hombrew-iot",
+  "private_key_id": "bf4d0977c8bf4ee582145ff930bf717950cb3561",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCom6oJcPst/bj9\nAeX/y6dRnqKBZeFae7XWjBMYbL2Z7U4586CF95F/MMnPJ5prq9UkzZKA10hDEUrW\nPpY7BNtPuCUKRzX4f0qKPxZkMTWmF6IHPierMKcT9KZhIWK5Dhyl+y1s2qqJIp3w\npRwD4E5oYiamQKbcyhLX/94OAufF1dlVM+csiE5rYNBRh4hjGvyLiEt798zr2IgN\nkETdciAhsXIFC9sWQuUkWm3XF5TxyqR9pjYglrGxTxdvb6Ilu3Wi48l7hLPXE3Tv\nzwO+bWpRvdwTYUNKXH8OrVqHMZwXPwsazyi5gw2+pr7w9sORUV8OVwbDvACdipGe\nLuNmn3IrAgMBAAECggEALW7QqT2f+Vsai1aFHuHGIsivulV1HXgjXf4dsSGwD3ex\n8gyzbxXwR0kiwCbIRgYl54ZbWUtpZeUVeNihi6K54+fXV0csBFtsfwcT5giaj7hj\niTcW4lq4UrjEUnz4CKyETLd7nI7pkA1baLpc67B4AEmeZ4MZU3pCDKEeOUFQKe8O\n1NY0j3TIbvEtkmPo2RETdMqyEXFOAeYqx5Vgfvq7/LzAmd5vg7gWoFeC/+kTSYSl\nRBt6knAUNsmDH8Vz84+3yWqr8xClyPSwa1eU8Pdew1hEgWTZ3v1zuzTY97DwBgu6\nIqh2GSJdDEEJCmdcdCHdBPWxSau/QfbZNsWAVicsaQKBgQDmKA1m9NKlaNcjHtT8\nrnWxq/XpwzZ9Y4lIc7nVk62elCfopssBkndBiSUvhidvcw7adTeMnqO07DOvNaLx\nf1ucE/0Iu8V5p9a4NEKi6etNYTHZbDXKPzqCIQUqlA5d+kfhxdGxLToqYyrzFbdP\nnb1TS5kuL0eI0XRRs86HePTNIwKBgQC7imBi+7JT3ngSBu7VPxhX21gJGljXvtBM\n62ZNtY9Rr59Gv3zaJoJkClXzH80gn3XTQZpLOVO4T/rQKx7s1sSyUlX4uxl2bEoX\nHDmiuvJOEn1qJAtWbaOA1/2rmphBPMRc/74Kk6n5tYx98F0FP9x7hDGPcKfNCIOJ\nKhIXWcfrWQKBgAG+0gMy3hoVBnSkujbEV+4mALJqIZKn25WqEwG0of9u3jKceTOk\n2bSshpSqrsfgln8/nlE5rsIjfGzaukackaRIXoXfbqryg+VXuB2mKnumvgsJEAtd\nmWL9Px3Ii6dYy4zBxEpUrnk90UiQpJg8+P+Vti6sex1lgT1RYMKUPz8DAoGARGLv\nRuj1XDPxoNE6YjSB0ffAIIGlB/ciygnE4m1kd6sM76WAB6SnQ4epU+Cy0kSTmJeB\nhhC/gKRZl3NB8adXTpdLlknTvSU71zWJptd46BNB/GRsZfXQ+3jHnb3f61oXWLpB\nOGYkQ1R6iKoPoYxp//hyghXYeqGyJWBb/HvWtPECgYAWqoG/ToT+1kK0OyTqOmAu\n6gEUQuZwdFx9Gi8dEoRjwISAt1jDHrzphoN//MDugLeeR+wLB0SED4apa1GWr024\nHdS0DnxHp59gu5VWxGt/RaOVAcFkrKM/wtkDIPGZSAhPlVkQZLM+ds8In0/rDzWC\nJsF8x8RUhUSKO3V17NK7wQ==\n-----END PRIVATE KEY-----\n",
+  "client_email": "hombrew-iot@appspot.gserviceaccount.com",
+  "client_id": "112649790294810192446",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/hombrew-iot%40appspot.gserviceaccount.com"
+}
