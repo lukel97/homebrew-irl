@@ -2,16 +2,32 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from datetime import date
 from google.cloud import firestore
+from django.views.decorators.csrf import csrf_protect
+
 import json
 
 # Handles stuff on the index page 
 def index(request):
 # 	BELOW IS THE EXAMPLE CODE FROM GOOGLE-CLOUD-FIRESTORE DOCUMENTATION
 # 	TODO: CHANGE IT TO USE INFO FROM OUR OWN FIRESTORE THINGAMAJIG
+
+	context = get_context()
+	# print(context)
+
+	# when you're getting stuff... get_object_or_404 maybe
+	return render(request, 'beer/index.html', context) 
+
+@csrf_protect
+def refresh(request):
+	print("HI")
 	
+	context = get_context()
+	print(context)
+	return HttpResponse(json.dumps(context))
+
+
+def get_context():
 	db = firestore.Client()
-	print("*****************************************")
-	# Then query for documents
 	doc_ref = db.collection(u'device-config').order_by(u'timestamp', direction = firestore.Query.DESCENDING).limit(1).stream()  #.stream() #(u'beerTemp')
 	last_beer_temp = 0 
 	last_ambient_temp = 0 
@@ -26,11 +42,11 @@ def index(request):
 
 	print("*****************************************")
 
+
 	context = {
 		"beer_temperature_string": last_beer_temp,
 		"ambient_temperature_string": last_ambient_temp,
-		"timestamp": last_timestamp
+		"timestamp": f"{last_timestamp}".split(".")[0]
 	}
 
-	# when you're getting stuff... get_object_or_404 maybe
-	return render(request, 'beer/index.html', context) 
+	return context
