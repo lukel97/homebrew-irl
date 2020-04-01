@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+	</head>
+
+	<body>
+
+	{% if beer_temperature_string %}
+		<p id="beer-timestamp"> 
+			Beer temperature at  {{ timestamp }} 
+		</p>
+		<p id="beer-temp">
+			{{ beer_temperature_string }}C
+		</p>
+
+	{% else %}
+		<p id="no-beer-temp">
+			!! NO TEMPERATURE DATA !!
+		</p>
+	{% endif %}
+
+	{% if ambient_temperature_string %}
+		<p id="ambient-timestamp"> 
+			Ambient temperature at  {{ timestamp }} 
+		</p>
+		<p id="ambient-temp">
+			{{ ambient_temperature_string }}C
+		</p>
+	{% else %}
+		<p id="no-ambient-temp">
+			!! NO TEMPERATURE DATA !!
+		</p>
+	{% endif %}
+	
+	</body>
+
+	<button id="refresh">
+		Refresh
+	</button>
+
+	<button id="NUKE_EVIDENCE">
+		NUKE
+	</button>
+
+	<script>
+
+		document.getElementById("NUKE_EVIDENCE").addEventListener("click", nuclear);
+		// document.getElementById("refresh").addEventListener("click", get_new_data);
+		function nuclear() {
+			console.log("DESTROYING EVIDENCE...");
+			// make the function do stuff to control the 
+		}
+
+		$("#refresh").click(function(){
+			$.ajax({
+				type: "GET",
+				url: "refresh/",
+				success: function(d){
+					var data = JSON.parse(d);
+					// var htmlString = $("#beer-temp").html();
+					console.log(data["timestamp"]);
+					console.log(data["beer_temperature_string"]);
+					console.log(data["ambient_temperature_string"]);
+
+					$("#beer-timestamp").text("Beer temperature at " + data["timestamp"]);
+					$("#beer-temp").text(data["beer_temperature_string"] + "C");
+					$("#ambient-timestamp").text("Ambient temperature at " + data["timestamp"]);
+					$("#ambient-temp").text(data["ambient_temperature_string"] + "C");
+				},
+			});
+			// call a view
+		});
+
+		
+	</script>
+
+</html>

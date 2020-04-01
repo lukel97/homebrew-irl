@@ -18,8 +18,8 @@
 #define TIMESERVER_HACK
 
 // waterproof temp
-#define Temp1_Pin 2
-#define Temp2_Pin 12
+#define Temp1_Pin 34
+#define Temp2_Pin 35
 OneWire oneWire(Temp1_Pin);
 OneWire twoWire(Temp2_Pin);
 
