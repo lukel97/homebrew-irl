@@ -46,12 +46,17 @@
 
 	<script>
 
-		document.getElementById("NUKE_EVIDENCE").addEventListener("click", nuclear);
-		// document.getElementById("refresh").addEventListener("click", get_new_data);
-		function nuclear() {
-			console.log("DESTROYING EVIDENCE...");
-			// make the function do stuff to control the 
-		}
+		$("#NUKE_EVIDENCE").click(function(){
+			$.ajax({
+				type: "GET",
+				url: "nuke/",
+				success: function(d){
+					var data = JSON.parse(d);
+					console.log(data["message"]);
+				},
+			});
+			// call a view
+		});
 
 		$("#refresh").click(function(){
 			$.ajax({
@@ -70,7 +75,6 @@
 					$("#ambient-temp").text(data["ambient_temperature_string"] + "C");
 				},
 			});
-			// call a view
 		});
 
         let socket = new WebSocket("ws://lukelau.me:8080")
