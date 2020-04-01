@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from datetime import date
+import datetime
+import dateutil.parser
 from google.cloud import firestore
 from django.views.decorators.csrf import csrf_protect
 from chartjs.views.lines import BaseLineChartView
@@ -51,13 +52,22 @@ def index(request):
         # when you're getting stuff... get_object_or_404 maybe
         return render(request, 'beer/index.html', context) 
 
-@csrf_protect
 def refresh(request):
         print("HI")
         
         context = get_context()
         print(context)
         return HttpResponse(json.dumps(context))
+
+def nuke(request):
+	db = firestore.Client()
+	doc_ref = db.collection(u'spam').document()
+
+	doc_ref.set({
+		u'message':'Cheese it, it\'s the feds!',
+        u'timestamp': datetime.datetime.now()
+	})
+	return HttpResponse(json.dumps({"message":"Sent message to DB"}))
 
 
 def get_context():
