@@ -2,7 +2,8 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+        <script type="text/javascript" src="{% static 'js/Chart.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'jquery-3.4.1.js' %}"></script>
         <link rel="stylesheet" href="{% static "style.css" %}">
     </head>
 
@@ -39,87 +40,14 @@
     
     </body>
 
-    <button id="refresh">
-        Refresh
-    </button>
-
     <button id="NUKE_EVIDENCE">
         NUKE
     </button>
-
-    <script>
-
-        $("#NUKE_EVIDENCE").click(function(){
-            $.ajax({
-                type: "GET",
-                url: "nuke/",
-                success: function(d){
-                    var data = JSON.parse(d);
-                    console.log(data["message"]);
-                },
-            });
-            // call a view
-        });
-
-        $("#refresh").click(function(){
-            $.ajax({
-                type: "GET",
-                url: "refresh/",
-                success: function(d){
-                    var data = JSON.parse(d);
-                    // var htmlString = $("#beer-temp").html();
-                    console.log(data["timestamp"]);
-                    console.log(data["beer_temperature_string"]);
-                    console.log(data["ambient_temperature_string"]);
-
-                    $("#timestamp").text(data["timestamp"]);
-                    $("#beer-temp").text(data["beer_temperature_string"] + "C");
-                    $("#ambient-temp").text(data["ambient_temperature_string"] + "C");
-                    $("#alcohol-amount").text(data["alcohol_amount_string"]);
-                },
-            });
-        });
-
-        // let socket = new WebSocket("ws://lukelau.me:8080")
-        let socket = new WebSocket("ws://35.184.74.223:443")
-        socket.onopen = () => $("#live").fadeIn()
-        socket.onclose = () => $("#live").fadeOut()
-        socket.onerror = console.error
-        socket.onmessage = function (event) {
-            $("#timestamp").text("just now");
-            let body = JSON.parse(event.data)
-            $("#beer-temp").text(body.beerTemp + "C")
-            $("#ambient-temp").text(body.ambientTemp + "C")
-            $("#alcohol-amount").text(body.gasPerc)
-        }
-        
-    </script>
 
     <div>
         <canvas class="chart" id="tempChart" width="500" height="400"></canvas>
         <canvas class="chart" id="alcoholChart" width="500" height="400"></canvas>
     </div>
 
-    <script type="text/javascript" src="{% static 'js/Chart.min.js' %}"></script>
-    <script type="text/javascript">
-        $.get('{% url "temp_chart_json" %}', function(data) {
-            var ctx = $("#tempChart").get(0).getContext("2d");
-            new Chart(ctx, {
-                type: 'line', data: data, options:  {
-                    maintainAspectRatio: false,
-                    responsive: false
-                }
-            });
-        });
-        $.get('{% url "alcohol_chart_json" %}', function(data) {
-            var ctx = $("#alcoholChart").get(0).getContext("2d");
-            new Chart(ctx, {
-                type: 'line', data: data, options:  {
-                    maintainAspectRatio: false,
-                    responsive: false
-                }
-            });
-        });
-    </script>
-
-</html>
+    
+    <script type="text/javascript" src="{% static 'main.js' %}"></script>
