@@ -11,9 +11,9 @@ import datetime
 
 db = firestore.Client()
 
+num_points = 100
 class LineChartJSONView(BaseLineChartView):
 
-    num_points = 100
     beer_ts = []; amb_ts = []; timestamps = []
     def __init__(self):
         doc_ref = db.collection(u'device-config') \
