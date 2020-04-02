@@ -22,9 +22,6 @@
 	{% endif %}
 
 	{% if ambient_temperature_string %}
-		<!-- <p id="ambient-timestamp"> --> 
-		<!-- 	Ambient temperature at  {{ timestamp }} --> 
-		<!-- </p> -->
 		<p id="ambient-temp">
 			{{ ambient_temperature_string }}C
 		</p>
@@ -33,6 +30,8 @@
 			!! NO TEMPERATURE DATA !!
 		</p>
 	{% endif %}
+
+    <p id="alcohol-amount"></p>
 	
 	</body>
 
@@ -66,8 +65,8 @@
 
 					$("#beer-timestamp").text("Latest reading at " + data["timestamp"]);
 					$("#beer-temp").text(data["beer_temperature_string"] + "C");
-					// $("#ambient-timestamp").text("Ambient temperature at " + data["timestamp"]);
 					$("#ambient-temp").text(data["ambient_temperature_string"] + "C");
+					$("#alcohol-amount").text(data["gas_perc_string"]);
 				},
 			});
 			// call a view
@@ -82,6 +81,7 @@
             let body = JSON.parse(event.data)
             $("#beer-temp").text("Beer temperature: " + body.beerTemp + "C")
             $("#ambient-temp").text("Ambient temperature: " + body.ambientTemp + "C")
+            $("#alcohol-amount").text("Alcohol amount: " + body.gasPerc)
         }
 		
 	</script>
