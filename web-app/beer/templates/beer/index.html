@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 	<head>
@@ -21,9 +22,6 @@
 	{% endif %}
 
 	{% if ambient_temperature_string %}
-		<p id="ambient-timestamp"> 
-			Ambient temperature at  {{ timestamp }} 
-		</p>
 		<p id="ambient-temp">
 			{{ ambient_temperature_string }}C
 		</p>
@@ -32,6 +30,8 @@
 			!! NO TEMPERATURE DATA !!
 		</p>
 	{% endif %}
+
+    <p id="alcohol-amount"></p>
 	
 	</body>
 
@@ -68,15 +68,38 @@
 					console.log(data["beer_temperature_string"]);
 					console.log(data["ambient_temperature_string"]);
 
-					$("#beer-timestamp").text("Beer temperature at " + data["timestamp"]);
+					$("#beer-timestamp").text("Latest reading at " + data["timestamp"]);
 					$("#beer-temp").text(data["beer_temperature_string"] + "C");
-					$("#ambient-timestamp").text("Ambient temperature at " + data["timestamp"]);
 					$("#ambient-temp").text(data["ambient_temperature_string"] + "C");
+					$("#alcohol-amount").text(data["gas_perc_string"]);
 				},
 			});
 		});
 
+        let socket = new WebSocket("ws://lukelau.me:8080")
+        socket.onopen = () => console.log('Connected')
+        socket.onclose = () => console.log('Closed')
+        socket.onerror = console.error
+        socket.onmessage = function (event) {
+            $("#beer-timestamp").text("Latest reading just now");
+            let body = JSON.parse(event.data)
+            $("#beer-temp").text("Beer temperature: " + body.beerTemp + "C")
+            $("#ambient-temp").text("Ambient temperature: " + body.ambientTemp + "C")
+            $("#alcohol-amount").text("Alcohol amount: " + body.gasPerc)
+        }
 		
+	</script>
+
+	<canvas id="myChart" width="500" height="400"></canvas>
+
+	<script type="text/javascript" src="{% static 'js/Chart.min.js' %}"></script>
+	<script type="text/javascript">
+		$.get('{% url "line_chart_json" %}', function(data) {
+			var ctx = $("#myChart").get(0).getContext("2d");
+			new Chart(ctx, {
+				type: 'line', data: data
+			});
+		});
 	</script>
 
 </html>

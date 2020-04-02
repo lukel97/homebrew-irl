@@ -25,4 +25,4 @@ jobs:
         PROJECT_ID: ${{secrets.GOOGLE_PROJECT_ID}}
         APPLICATION_CREDENTIALS: ${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}
       with:
-        args: compute instances update-container websocket-server --container-image gcr.io/hombrew-iot/websocket-server:latest
+        args: compute instances update-container websocket-server --container-image gcr.io/$PROJECT_ID/websocket-server:latest --zone us-central1-c

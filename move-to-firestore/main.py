@@ -18,5 +18,6 @@ def move_to_firestore(event, context):
     doc_ref.set({
         u'beerTemp': msg['beerTemp'],
         u'ambientTemp': msg['ambientTemp'],
+        u'gasPerc': msg['gasPerc'],
         u'timestamp': dateutil.parser.parse(context.timestamp)
         })
