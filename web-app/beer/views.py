@@ -11,6 +11,10 @@ import datetime
 
 db = firestore.Client()
 
+def format_timestamp(timestamp):
+    return timestamp.strftime('%H:%M:%S')
+
+
 num_points = 100
 class TempChartView(BaseLineChartView):
 
@@ -29,7 +33,7 @@ class TempChartView(BaseLineChartView):
             beer_dict = doc.to_dict()
             self.beer_ts.insert(0, beer_dict['beerTemp'])
             self.amb_ts.insert(0, beer_dict['ambientTemp'])
-            time_str = beer_dict['timestamp'].strftime('%H:%M:%S')
+            time_str = format_timestamp(beer_dict['timestamp'])
             self.timestamps.insert(0, time_str)
 
     def get_labels(self):
@@ -58,7 +62,7 @@ class AlcoholChartView(BaseLineChartView):
         for doc in doc_ref:
             beer_dict = doc.to_dict()
             self.alcs.insert(0, beer_dict.get('gasPerc', 0))
-            time_str = beer_dict['timestamp'].strftime('%H:%M:%S')
+            time_str = format_timestamp(beer_dict['timestamp'])
             self.timestamps.insert(0, time_str)
 
     def get_labels(self):
@@ -111,7 +115,7 @@ def get_context():
                 last_beer_temp = beer_dict['beerTemp'] 
                 last_ambient_temp = beer_dict['ambientTemp']
                 last_alcs = beer_dict.get('gasPerc', 0)
-                last_timestamp = beer_dict['timestamp']
+                last_timestamp = format_timestamp(beer_dict['timestamp'])
 
         print("*****************************************")
 
@@ -119,7 +123,7 @@ def get_context():
                 "beer_temperature_string": last_beer_temp,
                 "ambient_temperature_string": last_ambient_temp,
                 "alcohol_amount_string": last_alcs,
-                "timestamp": f"{last_timestamp}".split(".")[0],
+                "timestamp": last_timestamp
         }
 
         return context
