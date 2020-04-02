@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 import datetime
-import dateutil.parser
 from google.cloud import firestore
 from django.views.decorators.csrf import csrf_protect
 from chartjs.views.lines import BaseLineChartView
@@ -12,6 +11,7 @@ import datetime
 db = firestore.Client()
 
 def format_timestamp(timestamp):
+    # TODO: fix timezones
     return timestamp.strftime('%H:%M:%S')
 
 
