@@ -1,82 +1,83 @@
 {% load static %}
 <!DOCTYPE html>
 <html>
-	<head>
-		<script src="https://code.jquery.com/jquery-3.4.1.js"></script>
-	</head>
+    <head>
+        <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+    </head>
 
-	<body>
+    <body>
 
-	{% if beer_temperature_string %}
-		<p id="beer-timestamp"> 
-			Beer temperature at  {{ timestamp }} 
-		</p>
-		<p id="beer-temp">
-			{{ beer_temperature_string }}C
-		</p>
+    {% if beer_temperature_string %}
+        <p id="beer-timestamp"> 
+            Beer temperature at  {{ timestamp }} 
+        </p>
+        <p id="beer-temp">
+            {{ beer_temperature_string }}C
+        </p>
 
-	{% else %}
-		<p id="no-beer-temp">
-			!! NO TEMPERATURE DATA !!
-		</p>
-	{% endif %}
+    {% else %}
+        <p id="no-beer-temp">
+            !! NO TEMPERATURE DATA !!
+        </p>
+    {% endif %}
 
-	{% if ambient_temperature_string %}
-		<p id="ambient-temp">
-			{{ ambient_temperature_string }}C
-		</p>
-	{% else %}
-		<p id="no-ambient-temp">
-			!! NO TEMPERATURE DATA !!
-		</p>
-	{% endif %}
+    {% if ambient_temperature_string %}
+        <p id="ambient-temp">
+            {{ ambient_temperature_string }}C
+        </p>
+    {% else %}
+        <p id="no-ambient-temp">
+            !! NO TEMPERATURE DATA !!
+        </p>
+    {% endif %}
 
     <p id="alcohol-amount"></p>
-	
-	</body>
+    
+    </body>
 
-	<button id="refresh">
-		Refresh
-	</button>
+    <button id="refresh">
+        Refresh
+    </button>
 
-	<button id="NUKE_EVIDENCE">
-		NUKE
-	</button>
+    <button id="NUKE_EVIDENCE">
+        NUKE
+    </button>
 
-	<script>
+    <script>
 
-		$("#NUKE_EVIDENCE").click(function(){
-			$.ajax({
-				type: "GET",
-				url: "nuke/",
-				success: function(d){
-					var data = JSON.parse(d);
-					console.log(data["message"]);
-				},
-			});
-			// call a view
-		});
+        $("#NUKE_EVIDENCE").click(function(){
+            $.ajax({
+                type: "GET",
+                url: "nuke/",
+                success: function(d){
+                    var data = JSON.parse(d);
+                    console.log(data["message"]);
+                },
+            });
+            // call a view
+        });
 
-		$("#refresh").click(function(){
-			$.ajax({
-				type: "GET",
-				url: "refresh/",
-				success: function(d){
-					var data = JSON.parse(d);
-					// var htmlString = $("#beer-temp").html();
-					console.log(data["timestamp"]);
-					console.log(data["beer_temperature_string"]);
-					console.log(data["ambient_temperature_string"]);
+        $("#refresh").click(function(){
+            $.ajax({
+                type: "GET",
+                url: "refresh/",
+                success: function(d){
+                    var data = JSON.parse(d);
+                    // var htmlString = $("#beer-temp").html();
+                    console.log(data["timestamp"]);
+                    console.log(data["beer_temperature_string"]);
+                    console.log(data["ambient_temperature_string"]);
 
-					$("#beer-timestamp").text("Latest reading at " + data["timestamp"]);
-					$("#beer-temp").text(data["beer_temperature_string"] + "C");
-					$("#ambient-temp").text(data["ambient_temperature_string"] + "C");
-					$("#alcohol-amount").text(data["alcohol_amount_string"]);
-				},
-			});
-		});
+                    $("#beer-timestamp").text("Latest reading at " + data["timestamp"]);
+                    $("#beer-temp").text(data["beer_temperature_string"] + "C");
+                    $("#ambient-temp").text(data["ambient_temperature_string"] + "C");
+                    $("#alcohol-amount").text(data["alcohol_amount_string"]);
+                },
+            });
+        });
 
-        let socket = new WebSocket("ws://lukelau.me:8080")
+        // let socket = new WebSocket("ws://lukelau.me:8080")
+        let socket = new WebSocket("ws://35.184.74.223:443")
         socket.onopen = () => console.log('Connected')
         socket.onclose = () => console.log('Closed')
         socket.onerror = console.error
@@ -87,26 +88,32 @@
             $("#ambient-temp").text("Ambient temperature: " + body.ambientTemp + "C")
             $("#alcohol-amount").text("Alcohol amount: " + body.gasPerc)
         }
-		
-	</script>
+        
+    </script>
 
-	<canvas id="tempChart" width="500" height="400"></canvas>
-	<canvas id="alcoholChart" width="500" height="400"></canvas>
+    <canvas id="tempChart" width="500" height="400"></canvas>
+    <canvas id="alcoholChart" width="500" height="400"></canvas>
 
-	<script type="text/javascript" src="{% static 'js/Chart.min.js' %}"></script>
-	<script type="text/javascript">
-		$.get('{% url "temp_chart_json" %}', function(data) {
-			var ctx = $("#tempChart").get(0).getContext("2d");
-			new Chart(ctx, {
-				type: 'line', data: data
-			});
-		});
-		$.get('{% url "alcohol_chart_json" %}', function(data) {
-			var ctx = $("#alcoholChart").get(0).getContext("2d");
-			new Chart(ctx, {
-				type: 'line', data: data
-			});
-		});
-	</script>
+    <script type="text/javascript" src="{% static 'js/Chart.min.js' %}"></script>
+    <script type="text/javascript">
+        $.get('{% url "temp_chart_json" %}', function(data) {
+            var ctx = $("#tempChart").get(0).getContext("2d");
+            new Chart(ctx, {
+                type: 'line', data: data, options:  {
+                    maintainAspectRatio: false,
+                    responsive: false
+                }
+            });
+        });
+        $.get('{% url "alcohol_chart_json" %}', function(data) {
+            var ctx = $("#alcoholChart").get(0).getContext("2d");
+            new Chart(ctx, {
+                type: 'line', data: data, options:  {
+                    maintainAspectRatio: false,
+                    responsive: false
+                }
+            });
+        });
+    </script>
 
 </html>
