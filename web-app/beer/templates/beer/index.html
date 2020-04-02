@@ -3,16 +3,18 @@
 <html>
     <head>
         <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+        <link rel="stylesheet" href="{% static "style.css" %}">
     </head>
 
     <body>
 
+        <header>
+            🍺 Homebrew status at <span id="timestamp">{{ timestamp }}</span> <span id="live" style="display:none">🟢</span>
+        </header>
+
     {% if beer_temperature_string %}
-        <p id="beer-timestamp"> 
-            Beer temperature at  {{ timestamp }} 
-        </p>
-        <p id="beer-temp">
-            {{ beer_temperature_string }}C
+        <p>
+        🍺 Beer temperature <span id="beer-temp">{{ beer_temperature_string }}C</span>
         </p>
 
     {% else %}
@@ -22,8 +24,8 @@
     {% endif %}
 
     {% if ambient_temperature_string %}
-        <p id="ambient-temp">
-            {{ ambient_temperature_string }}C
+        <p>
+        ⛅️ Ambient temperature <span id="ambient-temp"> {{ ambient_temperature_string }}C</span>
         </p>
     {% else %}
         <p id="no-ambient-temp">
@@ -31,7 +33,9 @@
         </p>
     {% endif %}
 
-    <p id="alcohol-amount"></p>
+    <p>
+        🥴 Alcohol amount <span id="alcohol-amount"> {{ alcohol_amount_string }} </span>
+    </p>
     
     </body>
 
@@ -68,7 +72,7 @@
                     console.log(data["beer_temperature_string"]);
                     console.log(data["ambient_temperature_string"]);
 
-                    $("#beer-timestamp").text("Latest reading at " + data["timestamp"]);
+                    $("#timestamp").text(data["timestamp"]);
                     $("#beer-temp").text(data["beer_temperature_string"] + "C");
                     $("#ambient-temp").text(data["ambient_temperature_string"] + "C");
                     $("#alcohol-amount").text(data["alcohol_amount_string"]);
@@ -78,21 +82,23 @@
 
         // let socket = new WebSocket("ws://lukelau.me:8080")
         let socket = new WebSocket("ws://35.184.74.223:443")
-        socket.onopen = () => console.log('Connected')
-        socket.onclose = () => console.log('Closed')
+        socket.onopen = () => $("#live").fadeIn()
+        socket.onclose = () => $("#live").fadeOut()
         socket.onerror = console.error
         socket.onmessage = function (event) {
-            $("#beer-timestamp").text("Latest reading just now");
+            $("#timestamp").text("just now");
             let body = JSON.parse(event.data)
-            $("#beer-temp").text("Beer temperature: " + body.beerTemp + "C")
-            $("#ambient-temp").text("Ambient temperature: " + body.ambientTemp + "C")
-            $("#alcohol-amount").text("Alcohol amount: " + body.gasPerc)
+            $("#beer-temp").text(body.beerTemp + "C")
+            $("#ambient-temp").text(body.ambientTemp + "C")
+            $("#alcohol-amount").text(body.gasPerc)
         }
         
     </script>
 
-    <canvas id="tempChart" width="500" height="400"></canvas>
-    <canvas id="alcoholChart" width="500" height="400"></canvas>
+    <div>
+        <canvas class="chart" id="tempChart" width="500" height="400"></canvas>
+        <canvas class="chart" id="alcoholChart" width="500" height="400"></canvas>
+    </div>
 
     <script type="text/javascript" src="{% static 'js/Chart.min.js' %}"></script>
     <script type="text/javascript">

@@ -1,0 +1,10 @@
+body {
+	font-family: -apple-system, sans-serif;
+}
+header {
+	font-size: 20pt;
+	font-weight: bold;
+}
+.chart {
+	display: inline-block !important;
+}
