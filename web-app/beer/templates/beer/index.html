@@ -71,7 +71,7 @@
 					$("#beer-timestamp").text("Latest reading at " + data["timestamp"]);
 					$("#beer-temp").text(data["beer_temperature_string"] + "C");
 					$("#ambient-temp").text(data["ambient_temperature_string"] + "C");
-					$("#alcohol-amount").text(data["gas_perc_string"]);
+					$("#alcohol-amount").text(data["alcohol_amount_string"]);
 				},
 			});
 		});
@@ -90,12 +90,19 @@
 		
 	</script>
 
-	<canvas id="myChart" width="500" height="400"></canvas>
+	<canvas id="tempChart" width="500" height="400"></canvas>
+	<canvas id="alcoholChart" width="500" height="400"></canvas>
 
 	<script type="text/javascript" src="{% static 'js/Chart.min.js' %}"></script>
 	<script type="text/javascript">
-		$.get('{% url "line_chart_json" %}', function(data) {
-			var ctx = $("#myChart").get(0).getContext("2d");
+		$.get('{% url "temp_chart_json" %}', function(data) {
+			var ctx = $("#tempChart").get(0).getContext("2d");
+			new Chart(ctx, {
+				type: 'line', data: data
+			});
+		});
+		$.get('{% url "alcohol_chart_json" %}', function(data) {
+			var ctx = $("#alcoholChart").get(0).getContext("2d");
 			new Chart(ctx, {
 				type: 'line', data: data
 			});
