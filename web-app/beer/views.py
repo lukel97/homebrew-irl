@@ -15,7 +15,11 @@ num_points = 100
 class TempChartView(BaseLineChartView):
 
     beer_ts = []; amb_ts = []; timestamps = []
+
     def __init__(self):
+        self.beer_ts = []
+        self.amb_ts = []
+        self.timestamps = []
         doc_ref = db.collection(u'device-config') \
                     .order_by(u'timestamp', direction = firestore.Query.DESCENDING) \
                     .limit(num_points) \
@@ -44,6 +48,8 @@ class TempChartView(BaseLineChartView):
 class AlcoholChartView(BaseLineChartView):
     alcs = []; timestamps = []
     def __init__(self):
+        self.alcs = []
+        self.timestamps = []
         doc_ref = db.collection(u'device-config') \
                     .order_by(u'timestamp', direction = firestore.Query.DESCENDING) \
                     .limit(num_points) \
