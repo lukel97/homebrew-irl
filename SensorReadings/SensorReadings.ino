@@ -15,28 +15,19 @@
 #include <heltec.h>
 
 // Use this on TCDwifi
-#define TIMESERVER_HACK
+// #define TIMESERVER_HACK
 
 // waterproof temp
-#define Temp1_Pin 34
-#define Temp2_Pin 35
+#define Temp1_Pin 13
+//#define Temp2_Pin 35
+#define Temp2_Pin 12
 OneWire oneWire(Temp1_Pin);
 OneWire twoWire(Temp2_Pin);
-
 DallasTemperature sensor1(&oneWire);
 DallasTemperature sensor2(&twoWire);
-float Celcius = 0;
-float Fahrenheit = 0;
 
-const int tempPin = 0;
-const int alcAPin = 15;
-const int alcDPin = 22;
-
-// 4096 bytes
-double RawValue = 0;
-double Voltage = 0;
-double tempC = 0;
-double tempF = 0;
+const int alcAPin = 33;
+const int alcDPin = 32;
 
 // PID init
 double set_temp = 20;
@@ -56,13 +47,16 @@ CloudIoTCoreMqtt *mqtt;
 const char *deviceId = "esp32";
 
 void setup() {
+      Serial.begin(9600);
+      Serial.println("Beginning!!");
+
+
     // pinMode(tempPin, INPUT);
     pinMode(alcAPin, INPUT);
     pinMode(alcDPin, INPUT);
 	pinMode(Temp1_Pin, INPUT);
 	pinMode(Temp2_Pin, INPUT);
 
-    Serial.begin(9600);
 
     // myPID.SetMode(AUTOMATIC);
 
@@ -77,19 +71,19 @@ void setup() {
     WiFi.mode(WIFI_STA);
 
     // To connect to TCDwifi
-    esp_wifi_sta_wpa2_ent_set_identity((uint8_t *)EAP_IDENTITY,
-                                       strlen(EAP_IDENTITY));
-    esp_wifi_sta_wpa2_ent_set_username((uint8_t *)EAP_IDENTITY,
-                                       strlen(EAP_IDENTITY));
-    esp_wifi_sta_wpa2_ent_set_password((uint8_t *)EAP_PASSWORD,
-                                       strlen(EAP_PASSWORD));
-    esp_wpa2_config_t config = WPA2_CONFIG_INIT_DEFAULT();
-    esp_wifi_sta_wpa2_ent_enable(&config);
+    //esp_wifi_sta_wpa2_ent_set_identity((uint8_t *)EAP_IDENTITY,
+    //                                   strlen(EAP_IDENTITY));
+    //esp_wifi_sta_wpa2_ent_set_username((uint8_t *)EAP_IDENTITY,
+    //                                   strlen(EAP_IDENTITY));
+    //esp_wifi_sta_wpa2_ent_set_password((uint8_t *)EAP_PASSWORD,
+    //                                   strlen(EAP_PASSWORD));
+    //esp_wpa2_config_t config = WPA2_CONFIG_INIT_DEFAULT();
+    //esp_wifi_sta_wpa2_ent_enable(&config);
 
-    WiFi.begin("TCDwifi");
+    //WiFi.begin("TCDwifi");
 
-    // To connect to hotspot
-    /* WiFi.begin("Luke’s iPhone", "password"); */
+    // To connect to hotspot (Home wifi)
+    WiFi.begin("VME4D7ADF", "EQ2urjhduhad");
 }
 
 bool connected = false, timeSetup = false, cloudSetup = false;
@@ -179,26 +173,23 @@ String getJwt() {
     return device->createJWT(iat, 3000);
 }
 
-float ambientTemp, beerTemp;
+float ambientTemp, beerTemp, gasPerc;
 
 // reading 2 liquid temp sensors
 void watertemp() {
     sensor1.requestTemperatures();
     ambientTemp = sensor1.getTempCByIndex(0);
-    Fahrenheit = sensor1.toFahrenheit(ambientTemp);
-    Serial.print("Pin2 Sensor 1 C  ");
+    // float f = sensor1.toFahrenheit(ambientTemp);
+    Serial.print("Temp Sensor 1: ");
     Serial.print(ambientTemp);
-    Serial.print(" F  ");
-    Serial.println(Fahrenheit);
+    Serial.print("C  ");
 
     sensor2.requestTemperatures();
     beerTemp = sensor2.getTempCByIndex(0);
-    Fahrenheit = sensor2.toFahrenheit(beerTemp);
-    Serial.print("Pin4 Sensor 2");
-    Serial.print(" C  ");
+    // f = sensor2.toFahrenheit(beerTemp);
+    Serial.print("Temp Sensor 2: ");
     Serial.print(beerTemp);
-    Serial.print(" F  ");
-    Serial.println(Fahrenheit);
+    Serial.print("C  ");
 }
 
 bool syncTime() {
@@ -236,20 +227,25 @@ void loop() {
 
     Heltec.display->clear();
 
+
 	watertemp();
+
+    // Do gas content!!
+    gasPerc = analogRead(alcAPin);
+    Serial.println(String("Gas Sensor:") + gasPerc);
 
     displayWiFiStatus();
 
     // Sync the time
     if (!timeSetup && connected) {
 
-        const IPAddress dnsServer = IPAddress(134, 226, 251, 100); // for tcd wifi
+        // const IPAddress dnsServer = IPAddress(134, 226, 251, 100); // for tcd wifi
         /* const IPAddress dnsServer = IPAddress(1,1,1,1); */
 
         // Need to manually set the dns server for some reason. DHCP fails to do
         // so
-        WiFi.config(WiFi.localIP(), WiFi.gatewayIP(), WiFi.subnetMask(),
-                dnsServer);
+        //WiFi.config(WiFi.localIP(), WiFi.gatewayIP(), WiFi.subnetMask(), dnsServer);
+
         wifiClient = new WiFiClientSecure();
 
         timeSetup = syncTime();
@@ -266,8 +262,7 @@ void loop() {
         mqttClient = new MQTTClient(512);
         mqttClient->setOptions(180, true,
                                1000); // keepAlive, cleanSession, timeout
-        mqtt = new CloudIoTCoreMqtt(mqttClient, wifiClient, device,
-                                    true); // Use HTTP port!
+        mqtt = new CloudIoTCoreMqtt(mqttClient, wifiClient, device); // Use HTTP port!
         mqtt->setUseLts(true);
         mqtt->setLogConnect(false); // Otherwise we get those esp32-connected
                                     // messages in pub/sub
@@ -288,7 +283,8 @@ void loop() {
         if (every10Secs) {
             String payload =
                 String("{ \"ambientTemp\":") + String(ambientTemp) + ",\n";
-            payload += "\"beerTemp\": " + String(beerTemp) + "\n";
+            payload += "\"beerTemp\": " + String(beerTemp) + ",\n";
+            payload += "\"gasPerc\": " + String(gasPerc) + "\n";
             payload += "}";
             mqtt->publishTelemetry(payload);
             Serial.println("Sending:" + payload);
@@ -300,12 +296,11 @@ void loop() {
     Heltec.display->drawString(0, 22, lastMsgPayload);
 
     // temp sensor
-    tempC = celsius(analogRead(tempPin));
 
     Heltec.display->setTextAlignment(TEXT_ALIGN_CENTER);
-    Heltec.display->drawString(63, 33, "Current Ambient Temp:");
+    Heltec.display->drawString(63, 33, "Current Beer Temp:");
     Heltec.display->setTextAlignment(TEXT_ALIGN_CENTER);
-    Heltec.display->drawString(63, 44, String(tempC));
+    Heltec.display->drawString(63, 44, String(beerTemp));
 
     Heltec.display->setTextAlignment(TEXT_ALIGN_RIGHT);
     Heltec.display->drawString(10, 128, String(millis()));
@@ -344,15 +339,14 @@ void loop() {
 
 double celsius(double RawValue) {
     // fix equation ~500 instead of 330
-    Voltage = (RawValue * 330.0) / 4095.0;
-    tempC = (Voltage - 50.0) * 0.1; // adjust offset of 50
-
-    tempF = (tempC * 1.8) + 32.0; // conver to F
+    float V = (RawValue * 330.0) / 4095.0;
+    float tempC = (V - 50.0) * 0.1; // adjust offset of 50
+    float tempF = (tempC * 1.8) + 32.0; // conver to F
 
     /* Serial.print("Raw Value = " ); // shows pre-scaled value */
     /* Serial.print(RawValue); */
     /* Serial.print("\t milli volts = "); // shows the voltage measured */
-    /* Serial.print(Voltage,0); // */
+    /* Serial.print(V,0); // */
     /* Serial.print("\t Temperature in C = "); */
     /* Serial.print(tempC,1); */
     /* Serial.print("\t Temperature in F = "); */
