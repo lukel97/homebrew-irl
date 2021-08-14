@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Deploy
-      uses: actions-hub/gcloud@278.0.0
+      uses: actions-hub/gcloud@352.0.0
       env:
         PROJECT_ID: ${{secrets.GOOGLE_PROJECT_ID}}
         APPLICATION_CREDENTIALS: ${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}
